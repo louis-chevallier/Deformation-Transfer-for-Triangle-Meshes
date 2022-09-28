@@ -1,3 +1,8 @@
+from utillc import EKON, EKOX, TYPE
+from utillc import *
+
+print_everything()
+
 import numpy as np
 import tqdm
 from scipy import sparse
@@ -93,8 +98,8 @@ if __name__ == "__main__":
     import render.plot_result as plt_res
     import render.plot as plt
 
-    # cfg = ConfigFile.load(ConfigFile.Paths.highpoly.horse_camel)
-    cfg = ConfigFile.load(ConfigFile.Paths.lowpoly.catdog)
+    cfg = ConfigFile.load(ConfigFile.Paths.highpoly.horse_camel)
+    #cfg = ConfigFile.load(ConfigFile.Paths.lowpoly.catdog)
     # cfg = ConfigFile.load(ConfigFile.Paths.highpoly.cat_lion)
     corr_markers = cfg.markers  # List of vertex-tuples (source, target)
 
@@ -104,19 +109,37 @@ if __name__ == "__main__":
 
     #########################################################
     # Load meshes
-
+    EKOX(cfg.source.reference)
+    EKOX(cfg.target.reference)
     original_source = meshlib.Mesh.load(cfg.source.reference)
     original_pose = meshlib.Mesh.load(cfg.source.poses[0])
     original_target = meshlib.Mesh.load(cfg.target.reference)
+
+
+    original_source, original_target, original_pose = original_target, original_source, meshlib.Mesh.load(cfg.target.poses[0])
+
+    shape = lambda mesh : (mesh.faces.shape, mesh.vertices.shape)
+
+    
+    EKOX(shape(original_source))
+    EKOX(shape(original_target))
+    
     if identity:
         original_target = meshlib.Mesh.load(cfg.source.reference)
+
+        
 
     #########################################################
     # Load correspondence from cache if possible
     mapping = get_correspondence(original_source, original_target, corr_markers, plot=False)
 
+    EKOX(mapping.shape)
+
     transf = Transformation(original_source, original_target, mapping)
     result = transf(original_pose)
 
-    plt.MeshPlots.plot_correspondence(original_source, original_target, mapping).show(renderer="browser")
-    plt_res.plot(original_pose, result).show(renderer="browser")
+    EKOX(shape(result))
+
+    
+    #plt.MeshPlots.plot_correspondence(original_source, original_target, mapping).show(renderer="browser")
+    #plt_res.plot(original_pose, result).show(renderer="browser")
